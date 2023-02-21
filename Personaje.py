@@ -3,9 +3,9 @@ class Personaje:
     
 #ATRIBUTOS DEL PERSONAJE
 
-especie = "Humano"
-nombre = "Fenix"
-altura = 1.90
+ especie = "Humano"
+ nombre = "Fenix"
+ altura = 1.90
 
 #Metodos Personaje
 
