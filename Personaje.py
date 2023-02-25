@@ -22,7 +22,7 @@ class Personaje:
   def recargarArma(self, munciones): 
     cargador= 5
     cargador = cargador + munciones     
-    print("El arma tiene ahora "+ cargador +"balas")
+    print("El arma tiene ahora "+ str(cargador) +"balas")
   
   #Ejemplo de metodo Privado  
   def pensar(self):

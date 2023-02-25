@@ -41,7 +41,7 @@ print("Metodos Personaje")
 Heroe.correr(True)
 Heroe.lanzarGranada()
 Heroe.recargarArma(cargaH)
-Heroe.__pensar()
+#Heroe.__pensar()
 
 print("Atributos y Metodos del Villano ##")
 print ("El personaje pertenece a la raza: "+ Villano.getEspecie())
