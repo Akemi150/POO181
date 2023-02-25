@@ -25,28 +25,32 @@ Heroe= Personaje(espH, nomH, altH)
 Villano= Personaje(espV, nomV, altV)
 
 
+Heroe.setNombre("Pepe pecas")
+
+
 #4. Acceder a atributos y metodos del cada OBJ
 
 print("")
 print("Atributos y Metodos del Heroe ##")
-print ("El personaje pertenece a la raza: "+ Heroe.especie)
-print ("Se llama : "+ Heroe.nombre)
-print ("Mide : "+ str(Heroe.altura) + "Metros")
+print ("El personaje pertenece a la raza: "+ Heroe.getEspecie())
+print ("Se llama : "+ Heroe.getNombre())
+print ("Mide : "+ str(Heroe.getAltura( )) + "Metros")
 print("")
 
 print("Metodos Personaje")
 Heroe.correr(True)
 Heroe.lanzarGranada()
 Heroe.recargarArma(cargaH)
+Heroe.__pensar()
 
 print("Atributos y Metodos del Villano ##")
-print ("El personaje pertenece a la raza: "+ Villano.especie)
-print ("Se llama : "+ Villano.nombre)
-print ("Mide : "+ str(Villano.altura) + "Metros")
+print ("El personaje pertenece a la raza: "+ Villano.getEspecie())
+print ("Se llama : "+ Villano.getNombre())
+print ("Mide : "+ str(Villano.getAltura()) + "Metros")
 print("")
 
 print("Metodos Personaje")
-Heroe.correr(True)
-Heroe.lanzarGranada()
-Heroe.recargarArma(cargaH)
+Villano.correr(True)
+Villano.lanzarGranada()
+Villano.recargarArma(cargaH)
 
