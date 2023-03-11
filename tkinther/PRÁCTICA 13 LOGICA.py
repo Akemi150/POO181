@@ -1,28 +1,30 @@
 
-from tkinter import Tk,Frame,Button,messagebox
+from tkinter import messagebox
+import random
+import string
+
+class akemi:
+    def _init_(self, len,mayus,espe):
+        self.__longitud=len
+        self.__checkmayus=mayus
+        self.__checkspe=espe
 
 
-
-def mostrarMensaje():
-    messagebox.showinfo("Aviso", "Este mensaje es para informar algo")
-    messagebox.showerror("Error:","Todo fallo con éxito")
-    print(messagebox.askquestion("Pregunta:","El o ella jugo con tu corazón"))
-
-    
-ventana= Tk()
-ventana.title(" Practica 13 Tkinter y POO ")
-ventana.geometry("600x400")
-
-
-Seccion1=Frame(ventana,bg="#e6ccff")
-Seccion1.pack(expand=True,fill='both')
-
-
-Contraseña= Button(Seccion1, text="Generar Contraseña con una longitud de 8 caracteres" ,fg="#000d1a",command=mostrarMensaje )
-Contraseña.place(x=60, y=60)
-
-
-ventana.mainloop()
-
-
+    def checarSeguridad(self,parametro):
+        
+        if parametro  < 8:
+            messagebox.showerror("contraseña","La contraseña es debil")
+        elif parametro  < 12:
+            messagebox.showerror("contraseña","La contraseña es buena")
+        elif parametro  >= 13:
+            messagebox.showerror("contraseña","La contraseña es fuerte")   
+                
+    def generarContraseña(self,long, include_uppercase=False, include_special=False):
+        chars = string.ascii_lowercase
+        if include_uppercase:
+            chars += string.ascii_uppercase
+        if include_special:
+            chars += string.punctuation
+        password = ''.join(random.choice(chars) for _ in range(long))
+        messagebox.showinfo("contraseña",password)
 
