@@ -5,7 +5,6 @@
 
 
 import tkinter as tk
-import random
 
 def matricula():
     nombre = nombre_entry.get()
