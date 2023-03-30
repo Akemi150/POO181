@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 from controladorBD import *   #1. Presentamos los archivos Controlador Vista
-
+from tkinter import messagebox
+    
 #2. Creamos 1 objeto de la Clase ControladorBD
 controlador= controladorBD()
 
@@ -10,7 +11,29 @@ controlador= controladorBD()
 def ejecutaInsert():
     controlador.guardarUsuario(varNom.get(),varCor.get(),varCon.get())
 
+#4. FUNCION PARA DISPARAR EL BOTON BUSQUEDA
+def ejecutaSelectU():
+    Usuario= controlador.consultarUsuario(varBus.get())
+    for usu in Usuario:
+      cadena= str(usu[0]) + " " + usu[1] + " " + usu[2] + " " + str(usu[3])
 
+    if(Usuario):
+      print(cadena)
+    else:
+        messagebox.showinfo("No encontrado","Ese usuario no existe en la base de datos")
+        
+def ejecutaSelectU():
+    Usuario = controlador.consultarUsuario(varBus.get())
+    if Usuario:
+        cadena = "ID\tNombre\tCorreo\tContraseña\n"
+        for usu in Usuario:
+            cadena += f"{usu[0]}\t{usu[1]}\t{usu[2]}\t{usu[3]}\n"
+        textEnc.delete('1.0', END)
+        textEnc.insert('1.0', cadena)
+    else:
+        messagebox.showinfo("No encontrado","Ese usuario no existe en la base de datos")
+   
+        
 Ventana= Tk()
 Ventana.title("CRUD de Usuarios")
 Ventana.geometry("500x300")
@@ -40,6 +63,19 @@ lblCon= Label(Pestaña1, text="Contraseña: ").pack()
 txtCon= Entry(Pestaña1, textvariable=varCon).pack()
 
 btnGuardar= Button(Pestaña1, text="Guardar Usuario",command=ejecutaInsert).pack()
+
+# PESTAÑA2: BUSCAR USUARIO
+
+titulo2= Label(Pestaña2,text="Buscar Usuario", fg="red", font=("Modern",18)).pack()
+
+varBus= tk.StringVar()
+lblid= Label(Pestaña2, text="Identificador de Usuario: ").pack()
+txtid= Entry(Pestaña2, textvariable=varBus).pack()
+btnBus= Button(Pestaña2, text="Buscar",command=ejecutaSelectU).pack()
+
+subBus=Label(Pestaña2,text="Encontrado", fg="blue", font=("Modern",15))
+textEnc= tk.Text(Pestaña2,height=5,width=52)
+textEnc.pack()
 
 panel.add(Pestaña1, text="Formulario Usuarios")
 panel.add(Pestaña2, text="Buscar Usuarios")

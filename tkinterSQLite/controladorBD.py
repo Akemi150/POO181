@@ -55,4 +55,27 @@ class controladorBD:
             return ConHa
         
         
-        
+    # MÉTODO PARA BUSCAR 1 USUARIO
+         
+    def consultarUsuario(self,id):
+        #1. PREPARAR UNA CONEXION
+        Conx= self.conexionBD()
+
+        #2. VERIFICAR SI ID CONTIENE ALGO
+        if(id == ""):
+            messagebox.showwarning("Cuidado","Id vacio escribe algo válido")
+        else:
+             try:
+                 #3.PREPARAR LO NECESARIO
+                 cursor= Conx.cursor()
+                 selectQry= "Select * from TBRegistrados where id="+id
+                 
+                 #4.EJECUTAR Y GUARDAR LA CONSULTA
+                 cursor.execute(selectQry)
+                 rsUsuario= cursor.fetchall()
+                 
+                 return rsUsuario
+                 
+             except sqlite3.OperationalError:
+                 print("Error Consulta")   
+                 
