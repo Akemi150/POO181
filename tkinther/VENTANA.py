@@ -31,8 +31,3 @@ botonAcceso.pack()
 Ventana.mainloop()
 
 
-
-
-
-
-

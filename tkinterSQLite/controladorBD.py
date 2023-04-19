@@ -1,3 +1,4 @@
+
 from tkinter import messagebox
 import sqlite3
 import bcrypt
@@ -15,6 +16,27 @@ class controladorBD:
             return conexion 
         except sqlite3.OperationalError:
             print("No se pudo conectar")
+            
+            
+    #Metodo para consultar todos los usuarios
+    def consultarUsuarios(self):
+        #1. PREPARAR UNA CONEXION
+        Conx= self.conexionBD()
+        
+        try:
+            #2. PREPARAR LO NECESARIO
+            cursor= Conx.cursor()
+            selectQry= "Select * from TBRegistrados"
+            
+            #3. EJECUTAR Y GUARDAR LA CONSULTA
+            cursor.execute(selectQry)
+            rsUsuarios= cursor.fetchall()
+            
+            return rsUsuarios
+            
+        except sqlite3.OperationalError:
+            print("Error Consulta")
+
     
     #Metodo para Guardar Usuarios
     def guardarUsuario(self,Nom,Cor,Con):
@@ -38,8 +60,9 @@ class controladorBD:
             Conx.commit()
             Conx.close
             messagebox.showinfo("Éxito", "Usuario Guardado")
-        
-        
+     
+
+
     # Método para encriptar Contraseñas    
     def encriptarCon(self,Con):
             ConPlana= Con
@@ -53,7 +76,8 @@ class controladorBD:
             ConHa= bcrypt.hashpw(ConPlana, Sal)
             print(ConHa)
             return ConHa
-        
+
+
         
     # MÉTODO PARA BUSCAR 1 USUARIO
          
@@ -77,5 +101,7 @@ class controladorBD:
                  return rsUsuario
                  
              except sqlite3.OperationalError:
-                 print("Error Consulta")   
+                 print("Error Consulta")
+                 
+
                  

@@ -1,6 +1,7 @@
 
 import tkinter as tk
 from tkinter import ttk
+
 class GreetingFrame(ttk.Frame):
     
     def __init__(self, *args, **kwargs):
@@ -39,10 +40,10 @@ class Application(ttk.Frame):
         Ventana = tk.Toplevel(app)
         
     app = tk.Tk()
-    ButtonMenuOperaciones = tk.Button(app,text="Menu de Operaciones", command=)
+    ButtonMenuOperaciones = tk.Button(app,text="Menu de Operaciones", command=CrearVentana)
     ButtonMenuOperaciones.pack()
       
-        
+                    
         
 main_window = tk.Tk()
 app = Application(main_window)

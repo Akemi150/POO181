@@ -3,7 +3,7 @@ from tkinter import ttk
 import tkinter as tk
 from controladorBD import *   #1. Presentamos los archivos Controlador Vista
 from tkinter import messagebox
-    
+
 #2. Creamos 1 objeto de la Clase ControladorBD
 controlador= controladorBD()
 
@@ -33,10 +33,21 @@ def ejecutaSelectU():
     else:
         messagebox.showinfo("No encontrado","Ese usuario no existe en la base de datos")
    
-        
+#una consulta a la base de datos para importar TODOS LOS USUARIOS de en la Tabla Registrados a la interfaz de Python  
+
+def ejecutaConsulta():
+    Usuarios= controlador.consultarUsuarios()
+    cadena= "ID\tNombre\tCorreo\tContraseña\n"
+    for usu in Usuarios:
+        cadena += f"{usu[0]}\t{usu[1]}\t{usu[2]}\t{usu[3]}\n"
+    textEnc.delete('1.0', END)
+    textEnc.insert('1.0', cadena)
+
+#Creamos la ventana
+
 Ventana= Tk()
 Ventana.title("CRUD de Usuarios")
-Ventana.geometry("500x300")
+Ventana.geometry("800x300")
 
 panel= ttk.Notebook(Ventana)
 panel.pack(fill="both",expand="yes")
@@ -76,6 +87,18 @@ btnBus= Button(Pestaña2, text="Buscar",command=ejecutaSelectU).pack()
 subBus=Label(Pestaña2,text="Encontrado", fg="blue", font=("Modern",15))
 textEnc= tk.Text(Pestaña2,height=5,width=52)
 textEnc.pack()
+
+# PESTAÑA3: CONSULTAR USUARIOS
+
+titulo3= Label(Pestaña3,text="Consultar Usuarios", fg="green", font=("Modern",18)).pack()
+btnCons= Button(Pestaña3, text="Consultar",command=ejecutaConsulta).pack()
+
+subCons=Label(Pestaña3,text="Encontrados", fg="blue", font=("Modern",15))
+textEnc= tk.Text(Pestaña3,height=5,width=52)
+textEnc.pack()
+
+
+
 
 panel.add(Pestaña1, text="Formulario Usuarios")
 panel.add(Pestaña2, text="Buscar Usuarios")
