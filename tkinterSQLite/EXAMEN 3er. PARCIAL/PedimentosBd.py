@@ -12,65 +12,29 @@ def PedimentosBD():
     except sqlite3.OperationalError:
         print("No se pudo conectar")
     
-#metodo para consultar todos los pedimentos
-def consultarPedimentos():
+# función para agregar un nuevo pedimento a la tabla
+def agregar_pedimento():
+    transporte = transporte_entry.get()
+    aduana = aduana_entry.get()
+    conn.execute("INSERT INTO TBPedimentos (Transporte, Aduana) VALUES (?, ?)", (transporte, aduana))
+    conn.commit()
+    status_label.config(text="Pedimento agregado")
 
-    #1. PREPARAR UNA CONEXION
-    Conx= PedimentosBD()
+# función para eliminar un pedimento de la tabla
+def eliminar_pedimento():
+    id_expo = id_expo_entry.get()
+    conn.execute("DELETE FROM TBPedimentos WHERE IDExpo = ?", (id_expo,))
+    conn.commit()
+    status_label.config(text="Pedimento eliminado")
 
-    try:
-        #2. PREPARAR LO NECESARIO
-        cursor= Conx.cursor()
-        selectQry= "Select * from TBPedimentos"
-
-        #3. EJECUTAR Y GUARDAR LA CONSULTA
-        cursor.execute(selectQry)
-        rsPedimentos= cursor.fetchall()
-
-        return rsPedimentos
-
-    except sqlite3.OperationalError:
-        print("Error Consulta")
-        
-#Metodo para Guardar Pedimentos
-
-def guardarPedimento(Transp,Adu):
-        
-        #1. Usamos una conexion
-        Conx= PedimentosBD()
-        
-        #2. Validar parametros Vacios
-        if(Transp == "" or Adu == ""):
-            messagebox.showwarning("Aguas", "Formulario Incompleto")
-        else:
-            
-            #3. Preparamos Cursor,Datos,QuerySQL
-            Cursor= Conx.cursor()  
-            Datos=(Transp,Adu)
-            qrInsert= "insert into TBPedimentos(Transporte,Aduana) values(?,?)" 
-            
-            #4. Ejecutar Insert y cerramos Conexión
-            Cursor.execute(qrInsert,Datos) 
-            Conx.commit()
-            
-#Metodo para buscar pedimentos por aduana
-
-def buscarPedimentos(Adu):
-            
-            #1. Usamos una conexion
-            Conx= PedimentosBD()
-            
-            #2. Validar parametros Vacios
-            if(Adu == ""):
-                messagebox.showwarning("Aguas", "Formulario Incompleto")
-            else:
-                
-                #3. Preparamos Cursor,Datos,QuerySQL
-                Cursor= Conx.cursor()  
-                Datos=(Adu)
-                qrInsert= "Select * from TBPedimentos where Aduana=?" 
-                
-                #4. Ejecutar Insert y cerramos Conexión
-                Cursor.execute(qrInsert,Datos) 
-                Conx.commit()
-
+# función para buscar pedimentos por aduana
+def buscar_pedimentos():
+    aduana = aduana_entry.get()
+    cursor = conn.execute("SELECT * FROM TBPedimentos WHERE Aduana = ?", (aduana,))
+    result = cursor.fetchall()
+    if result:
+        status_label.config(text="")
+        for row in result:
+            pedimentos_listbox.insert(tk.END, row)
+    else:
+        status_label.config(text="No se encontraron pedimentos para esta aduana")
