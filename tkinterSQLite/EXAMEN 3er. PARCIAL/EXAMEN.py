@@ -1,84 +1,128 @@
 import tkinter as tk
 import sqlite3
+from tkinter import messagebox
 
-# crear una conexión a la base de datos
-conn = sqlite3.connect('BaseAkemi.db')
-c = conn.cursor()
+class App:
+    def __init__(self, master):
+        self.master = master
+        master.title("Exportaciones")
+        
+        self.transport_label = tk.Label(master, text="Transporte:")
+        self.transport_label.grid(row=0, column=0)
+        
+        self.transport_entry = tk.Entry(master)
+        self.transport_entry.grid(row=0, column=1)
+        
+        self.aduana_label = tk.Label(master, text="Aduana:")
+        self.aduana_label.grid(row=1, column=0)
+        
+        self.aduana_entry = tk.Entry(master)
+        self.aduana_entry.grid(row=1, column=1)
+        
+        self.add_button = tk.Button(master, text="Agregar", command=self.add_pedimento)
+        self.add_button.grid(row=2, column=0)
+        
+        self.delete_button = tk.Button(master, text="Eliminar", command=self.delete_pedimento)
+        self.delete_button.grid(row=2, column=1)
+        
+        self.consulta_button = tk.Button(master, text="Consultar", command=self.consulta_aduana)
+        self.consulta_button.grid(row=3, column=0)
+        
+        self.view_button = tk.Button(master, text="Ver pedimentos", command=self.view_pedimentos)
+        self.view_button.grid(row=3, column=1)
+        
+        # Conexión a la base de datos
+        self.conn = sqlite3.connect("BaseAkemi.db")
+        self.c = self.conn.cursor()
+        
+        # Creación de la tabla si no existe
+        self.c.execute("""CREATE TABLE IF NOT EXISTS TBPedimentos (
+                            IDExpo INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Transporte TEXT,
+                            Aduana TEXT
+                            )""")
+        self.conn.commit()
+    
+    def add_pedimento(self):
+        # Inserta un nuevo pedimento en la base de datos con los valores de los campos
+        self.c.execute("INSERT INTO TBPedimentos (Transporte, Aduana) VALUES (?, ?)", 
+                       (self.transport_entry.get(), self.aduana_entry.get()))
+        self.conn.commit()
+        
+        # Borra los valores de los campos después de insertar el pedimento
+        self.transport_entry.delete(0, tk.END)
+        self.aduana_entry.delete(0, tk.END)
+    
+    def delete_pedimento(self):
+      try:
+        # Obtener el índice del elemento seleccionado en la lista de pedimentos
+        selected_item = self.pedimentos_listbox.curselection()[0]
+        item_text = self.pedimentos_listbox.get(selected_item)
+        if ":" not in item_text:
+            raise ValueError("El elemento seleccionado no tiene el formato esperado")
+        id_expo = int(item_text.split(":")[1])
+        
+        
+        # Eliminar el pedimento de la base de datos
+        self.c.execute("DELETE FROM TBPedimentos WHERE IDExpo=?", (id_expo,))
+        self.conn.commit()
+        
+        # Actualizar la lista de pedimentos
+        self.view_pedimentos()
+      except IndexError:
+             messagebox.showinfo("Error", "Seleccione un pedimento para eliminar")
+      except ValueError as e:
+            messagebox.showinfo("Error", str(e))
+            
+            print(self.pedimentos_listbox.curselection())
+            selected_item = self.pedimentos_listbox.curselection()[0]
 
-# crear una tabla si aún no existe
-conn.execute('''CREATE TABLE IF NOT EXISTS TBPedimentos
-                (IDExpo INTEGER PRIMARY KEY AUTOINCREMENT,
-                 Transporte VARCHAR(30),
-                 Aduana VARCHAR(30))''')
 
-# función para agregar un nuevo pedimento a la tabla
-def agregar_pedimento():
-    transporte = transporte_entry.get()
-    aduana = aduana_entry.get()
-    conn.execute("INSERT INTO TBPedimentos (Transporte, Aduana) VALUES (?, ?)", (transporte, aduana))
-    conn.commit()
-    status_label.config(text="Pedimento agregado")
+    
+    def consulta_aduana(self):
+        # Consulta los pedimentos por aduana
+        aduana = self.aduana_entry.get()
+        self.c.execute("SELECT * FROM TBPedimentos WHERE Aduana=?", (aduana,))
+        rows = self.c.fetchall()
+        
+        if len(rows) == 0:
+            tk.messagebox.showinfo("Error", "No hay pedimentos registrados para esta aduana")
+        else:
+            pedimentos = ""
+            for row in rows:
+                pedimentos += f"ID: {row[0]}, Transporte: {row[1]}, Aduana: {row[2]}\n"
+        # Muestra los resultados en una ventana nueva
+        if pedimentos != "":
+            results_window = tk.Toplevel(self.master)
+            results_window.title("Resultados de consulta")
+            
+            results_label = tk.Label(results_window, text=pedimentos)
+            results_label.pack()
+    
+    def view_pedimentos(self):
+        # Obtiene todos los pedimentos de la base de datos y los muestra en una lista
+        self.c.execute("SELECT * FROM TBPedimentos")
+        rows = self.c.fetchall()
+        pedimentos = [f"ID: {row[0]}, Transporte: {row[1]}, Aduana: {row[2]}" for row in rows]
+        
+        if len(pedimentos) == 0:
+            pedimentos.append("No hay pedimentos registrados")
+        
+        if hasattr(self, "pedimentos_listbox"):
+            self.pedimentos_listbox.destroy()
+        
+        self.pedimentos_listbox = tk.Listbox(self.master, width=50)
+        
+        for i, pedimento in enumerate(pedimentos):
+            self.pedimentos_listbox.insert(i, pedimento)
+        
+        self.pedimentos_listbox.grid(row=4, column=0, columnspan=2)
 
-# función para eliminar un pedimento de la tabla
-def eliminar_pedimento():
-    id_expo = id_expo_entry.get()
-    conn.execute("DELETE FROM TBPedimentos WHERE IDExpo = ?", (id_expo,))
-    conn.commit()
-    status_label.config(text="Pedimento eliminado")
-
-# función para buscar pedimentos por aduana
-def buscar_pedimentos():
-    aduana = aduana_entry.get()
-    cursor = conn.execute("SELECT * FROM TBPedimentos WHERE Aduana = ?", (aduana,))
-    result = cursor.fetchall()
-    if result:
-        status_label.config(text="")
-        for row in result:
-            pedimentos_listbox.insert(tk.END, row)
-    else:
-        status_label.config(text="No se encontraron pedimentos para esta aduana")
-
-# crear la ventana principal de Tkinter
 root = tk.Tk()
 root.title("Exportaciones")
-root.geometry("500x400")
-# agregar un campo de entrada para el transporte
-transporte_label = tk.Label(root, text='Transporte:')
-transporte_label.pack()
-transporte_entry = tk.Entry(root)
-transporte_entry.pack()
-
-# agregar un campo de entrada para la aduana
-aduana_label = tk.Label(root, text='Aduana:')
-aduana_label.pack()
-aduana_entry = tk.Entry(root)
-aduana_entry.pack()
-
-# agregar un botón para agregar un nuevo pedimento
-agregar_button = tk.Button(root, text='Agregar', command=agregar_pedimento)
-agregar_button.pack()
-
-# agregar un campo de entrada para el IDExpo del pedimento a eliminar
-id_expo_label = tk.Label(root, text='IDExpo:')
-id_expo_label.pack()
-id_expo_entry = tk.Entry(root)
-id_expo_entry.pack()
-
-# agregar un botón para eliminar un pedimento existente
-eliminar_button = tk.Button(root, text='Eliminar', command=eliminar_pedimento)
-eliminar_button.pack()
-
-# agregar un botón para buscar pedimentos por aduana
-buscar_button = tk.Button(root, text='Buscar', command=buscar_pedimentos)
-buscar_button.pack()
-
-# agregar una lista para mostrar los pedimentos encontrados por la búsqueda
-pedimentos_listbox = tk.Listbox(root, height=10)
-pedimentos_listbox.pack()
-
-# agregar una etiqueta para mostrar el estado de la operación
-status_label = tk.Label(root, text="")
-status_label.pack()
-        
-# iniciar el bucle principal de Tkinter
+root.geometry("420x300")
+app = App(root)
 root.mainloop()
+
+# Cerrar la conexión a la base de datos al salir de la aplicación
+app.conn.close()
